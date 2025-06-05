@@ -21,9 +21,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveSubsystem extends SubsystemBase {
     private MAXSwerveModule m_SwerveModuleFrontLeft;
-    //private MAXSwerveModule m_SwerveModuleBackLeft;
-    //private MAXSwerveModule m_SwerveModuleFrontRight;
+    private MAXSwerveModule m_SwerveModuleBackLeft;
+    private MAXSwerveModule m_SwerveModuleFrontRight;
     private MAXSwerveModule m_SwerveModuleBackRight;
+
+
+    SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+     DriveConstants.kDriveKinematics, 
+    new Rotation2d(),
+    new SwerveModulePosition[] {
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition()
+        }
+    );
 
     private SwerveModuleState[] allState = new SwerveModuleState[] {
         new SwerveModuleState(),
@@ -37,13 +49,13 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveSubsystem() {   
         // Initialize the swerve module with the CAN IDs and angular offset
         m_SwerveModuleFrontLeft = new MAXSwerveModule(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset);
-        //m_SwerveModuleBackLeft = new MAXSwerveModule(DriveConstants.kBackLeftDriveCanId, DriveConstants.kBackLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset);
-        //m_SwerveModuleFrontRight = new MAXSwerveModule(DriveConstants.kFrontRightDriveCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset);
-        m_SwerveModuleBackRight = new MAXSwerveModule(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset);
+        m_SwerveModuleBackLeft = new MAXSwerveModule(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset);
+        m_SwerveModuleFrontRight = new MAXSwerveModule(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset);
+        m_SwerveModuleBackRight = new MAXSwerveModule(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset);
 
     }
     
-    public void setSwerveState(SwerveModuleState stateFrontLeft, SwerveModuleState stateBackRight /*, SwerveModuleState stateBackLeft, SwerveModuleState stateFrontRight*/) {
+    public void setSwerveState(SwerveModuleState stateFrontLeft, SwerveModuleState stateBackRight , SwerveModuleState stateBackLeft, SwerveModuleState stateFrontRight) {
         //SwerveModuleState desiredState = new SwerveModuleState();
         //sets the speed and angle of the desired state to the current state
         //desiredState.speedMetersPerSecond = state.speedMetersPerSecond;
@@ -51,24 +63,28 @@ public class SwerveSubsystem extends SubsystemBase {
 
         allState = new SwerveModuleState[] {
             stateFrontLeft,
-            //SwerveModuleState stateBackLeft
-            new SwerveModuleState(),
-            //SwerveModuleState stateBackLeft
-            new SwerveModuleState(),
+            stateBackLeft,
+            stateFrontRight,
             stateBackRight
         };
-        m_SwerveModuleFrontLeft.setDesiredState(stateFrontLeft);
-        m_SwerveModuleFrontLeft.setDesiredState(stateBackRight);
-        //m_SwerveModuleBackLeft.setDesiredState(stateBackLeft);
-        //m_SwerveModuleFrontRight.setDesiredState(stateFrontRight);
-    
+        var frontLeftOptimized = SwerveModuleState.optimize(stateFrontLeft, m_SwerveModuleFrontLeft.getState().angle);
+        var backRightOptimized = SwerveModuleState.optimize(stateBackRight, m_SwerveModuleBackRight.getState().angle);
+        var stateBackLeftOptimized = SwerveModuleState.optimize(stateBackLeft, m_SwerveModuleBackLeft.getState().angle);
+        var stateFrontRightOptimized = SwerveModuleState.optimize(stateFrontRight, m_SwerveModuleFrontRight.getState().angle);
+        m_SwerveModuleFrontLeft.setDesiredState(frontLeftOptimized);
+        m_SwerveModuleFrontLeft.setDesiredState(backRightOptimized);
+        m_SwerveModuleBackLeft.setDesiredState(stateBackLeftOptimized);
+        m_SwerveModuleFrontRight.setDesiredState(stateFrontRightOptimized); 
+        
+
+        
     }
 
     public void resetEncoders(){
         m_SwerveModuleFrontLeft.resetEncoders();
         m_SwerveModuleBackRight.resetEncoders();
-        //m_SwerveModuleBackLeft.resetEncoders();
-        //m_SwerveModuleFrontRight.resetEncoders();
+        m_SwerveModuleBackLeft.resetEncoders();
+        m_SwerveModuleFrontRight.resetEncoders();
 
     }
 
@@ -82,6 +98,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
         publisher.set(allState);
     }
 

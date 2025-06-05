@@ -53,13 +53,11 @@ public class ElevatorSubsystem extends SubsystemBase{
     public void simulationPeriodic(){
         position += m_power * 0.02 * 10;
         m_encoder.setPosition(position);
-        SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
         if (m_encoder.getPosition() > maxPosition) {
             position = maxPosition;
             m_encoder.setPosition(maxPosition);
        //     m_power = 0;
          //   m_intakeMotor.set(m_power);
-            SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
 
 
         } 
@@ -68,11 +66,12 @@ public class ElevatorSubsystem extends SubsystemBase{
             m_encoder.setPosition(minPosition);
           //  m_power = 0;
             //m_intakeMotor.set(m_power);
-            SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
 
 
 
         }
+        SmartDashboard.putNumber("Elevator Position", m_encoder.getPosition());
+
        
     }
 }

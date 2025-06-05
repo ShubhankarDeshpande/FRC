@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Command.ElevatorRunnerCommands;
@@ -34,6 +35,9 @@ import java.util.List;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.time.Instant;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -55,9 +59,10 @@ public class RobotContainer {
   public RobotContainer() {
     swerveSubsystem.setDefaultCommand(new SwerveDriveCmd(
       swerveSubsystem,
-       () -> driverJoystick.getRawAxis(OIConstants.kDriverYAxis),
-       () -> driverJoystick.getRawAxis(OIConstants.kDriverYAxis),
-       () -> driverJoystick.getRawAxis(OIConstants.kDriverRotAxis)
+       () -> m_driverController.getRawAxis(OIConstants.kDriverYAxis),
+       () -> m_driverController.getRawAxis(OIConstants.kDriverYAxis),
+       () -> m_driverController.getRawAxis(OIConstants.kDriverRotAxis)
+
        ));
     // Configure the button bindings
     configureButtonBindings();
