@@ -70,7 +70,7 @@ public class SwerveSubsystem extends SubsystemBase {
         var frontLeftOptimized = SwerveModuleState.optimize(stateFrontLeft, m_SwerveModuleFrontLeft.getState().angle);
         var backRightOptimized = SwerveModuleState.optimize(stateBackRight, m_SwerveModuleBackRight.getState().angle);
         var stateBackLeftOptimized = SwerveModuleState.optimize(stateBackLeft, m_SwerveModuleBackLeft.getState().angle);
-        var stateFrontRightOptimized = SwerveModuleState.optimize(stateFrontRight, m_SwerveModuleFrontRight.getState().angle);
+        var stateFrontRightOptimized = SwerveModuleState.optimize(stateFrontRight, m_SwerveModuleBackLeft.getState().angle);
         m_SwerveModuleFrontLeft.setDesiredState(frontLeftOptimized);
         m_SwerveModuleFrontLeft.setDesiredState(backRightOptimized);
         m_SwerveModuleBackLeft.setDesiredState(stateBackLeftOptimized);
